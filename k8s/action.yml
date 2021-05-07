@@ -1,0 +1,27 @@
+name: 'Chkk Kubernetes Manifests'
+description: 'Check your Kubernetes manifests for reliability risks'
+inputs:
+  kubernetes-manifest:
+    description: 'Kubernetes manifest to check'
+    required: true
+  skip-checks:
+    description: 'List of checks to skip'
+    required: false
+    default: "default"
+  run-checks:
+    description: 'List of checks to run'
+    required: false
+    default: "default"
+  args:
+    description: 'Additional arguments to pass to Chkk'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - run: curl -Lo chkk https://downloads.chkk.dev/v0.0.1/chkk-linux-amd64
+      shell: bash
+    - run: chmod +x chkk
+      shell: bash
+    - run: ${{ github.workspace }}/chkk -f ${{ inputs.kubernetes-manifest }} -s ${{ inputs.skip-checks }} -r ${{ inputs.run-checks }} ${{ inputs.args }}
+      shell: bash

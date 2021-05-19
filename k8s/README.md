@@ -28,6 +28,7 @@ The Chkk GitHub Action has properties which are passed to the underlying CLI. Th
 | kubernetes-manifest |         | The path to the Kubernetes manifest file you want to check.  |
 | skip-checks         |         | A comma-separated list of checks you want to skip.           |
 | run-checks       |         | A comma-separated list of specific checks you want to run instead of running all checks. |
+| check-type          | reliability | Run specific type of checks. Available options: [all/reliability/security] |
 
 
 
@@ -37,7 +38,7 @@ List of supported `args`
 
 | Argument            | Default | Description                              |
 | :------------------ | :------ | :--------------------------------------- |
-| --hide-diff         | false   | Hide line diff in result output               |
+| --show-diff         | false   | Show line diff in result output               |
 | --continue-on-error | false   | Do not raise error in case a check fails |
 
 
@@ -76,9 +77,8 @@ jobs:
         kubernetes-manifest: 'k8s/k8s-manifest.yaml'
 ```
 
-### Hide Line Diff for Failed Checks
-To hide the line diff for failed checks in the result output, configure the Action with following argument: `--hide-diff`
-
+### Show Line Diff for Failed Checks
+To show the line diff for failed checks in the result output, configure the Action with following argument: `--show-diff`
 
 ```yaml
 on: [push]
@@ -94,7 +94,7 @@ jobs:
         CHKK_ACCESS_TOKEN: ${{ secrets.CHKK_ACCESS_TOKEN }}
       with:
         kubernetes-manifest: 'k8s/k8s-manifest.yaml'
-        args: '--hide-diff'
+        args: '--show-diff'
 ```
 
 ### Run Specific Checks
@@ -166,5 +166,34 @@ jobs:
         kubernetes-manifest: 'k8s/k8s-manifest.yaml'
         args: '--continue-on-error'
 ```
+
+### Run Specific Type of Checks (Security/Reliability/All)
+
+To run specific types of checks, configure the Action with the following argument: `--check-type` 
+
+Available options are:
+
+* security
+* reliability (selected as default)
+* all
+
+
+```yaml
+on: [push]
+
+jobs:
+  kubernetes-manifests:
+    runs-on: ubuntu-latest
+    name: Run Chkk to catch reliability risks in your Kubernetes manifests
+    steps:
+    - uses: actions/checkout@v2
+    - uses: chkk-io/actions/k8s@main
+      env:
+        CHKK_ACCESS_TOKEN: ${{ secrets.CHKK_ACCESS_TOKEN }}
+      with:
+        kubernetes-manifest: 'k8s/k8s-manifest.yaml'
+        args: '--check-type=all'
+```
+
 
 Made with 🧡 by Chkk

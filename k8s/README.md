@@ -23,7 +23,7 @@ jobs:
 
 To use Chkk in Standalone Mode, simply set the `standalone-mode` paramater to `true` as shown in the example below:
 
-```
+```yaml
 name: Example workflow for Chkk Kubernetes Action
 on: push
 jobs:

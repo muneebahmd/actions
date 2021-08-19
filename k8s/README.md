@@ -48,8 +48,8 @@ The Chkk GitHub Action has properties which are passed to the underlying CLI. Th
 | :------------------ | :------ | ------------------------------------------------------------ |
 | args                |         | Override the default arguments to the Chkk CLI               |
 | kubernetes-manifest |         | The path to the Kubernetes manifest file you want to check.  |
-| skip-checks         |         | A comma-separated list of checks you want to skip.           |
-| run-checks       |         | A comma-separated list of specific checks you want to run instead of running all checks. |
+| suppressions         |         | A comma-separated list of checks you want to suppress.           |
+| checks       |         | A comma-separated list of specific checks you want to run instead of running all checks. |
 | check-type          | all | Run specific type of checks. Available options: [all, reliability, security, apideprecation, operatingsystem, livenessreadinessprobe, resourcelimit]|
 
 
@@ -124,7 +124,7 @@ jobs:
 
 To run one or more specific checks on the sample K8s manifest, configure the Action with following parameter:
 
-`run-checks` : <list of comma separated checks. e.g. CHKK-K8S-27,CHKK-K8S-28>
+`checks` : <list of comma separated checks. e.g. CHKK-K8S-27,CHKK-K8S-28>
 
 ```yaml
 on: [push]
@@ -140,14 +140,14 @@ jobs:
         CHKK_ACCESS_TOKEN: ${{ secrets.CHKK_ACCESS_TOKEN }}
       with:
         kubernetes-manifest: 'k8s/k8s-manifest.yaml'
-        run-checks: 'CHKK-K8S-27,CHKK-K8S-28'
+        checks: 'CHKK-K8S-27,CHKK-K8S-28'
 ```
 
-### Skip Checks
+### Suppress Checks
 
-To skip one or more specific checks, configure the Action with following parameter:
+To suppress one or more specific checks, configure the Action with following parameter:
 
-`skip-checks` : <list of comma separated checks. e.g. CHKK-K8S-27,CHKK-K8S-28>
+`suppressions` : <list of comma separated checks. e.g. CHKK-K8S-27,CHKK-K8S-28>
 
 ```yaml
 on: [push]
@@ -163,13 +163,13 @@ jobs:
         CHKK_ACCESS_TOKEN: ${{ secrets.CHKK_ACCESS_TOKEN }}
       with:
         kubernetes-manifest: 'k8s/k8s-manifest.yaml'
-        skip-checks: 'CHKK-K8S-27,CHKK-K8S-28'
+        suppressions: 'CHKK-K8S-27,CHKK-K8S-28'
 ```
 
 
 
 
-### Suppress Failing Checks
+### Suppress Check Failures
 
 To prevent the overall Action from failing in case one or more checks fail, configure the Action with following argument: `--continue-on-error`
 

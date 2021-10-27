@@ -1,51 +1,83 @@
 name: 'Chkk Kubernetes Manifests'
-description: 'Check your Kubernetes manifests for reliability risks'
+description: 'Check your Kubernetes manifests to catch reliability risks during deployments and upgrades'
 inputs:
-  kubernetes-manifest:
-    description: 'Kubernetes manifest to check'
-    required: false
-  kubernetes-directory:
-    description: 'Directory of Kubernetes manifests to check'
-    required: false
-  helm-chart:
-    description: 'Helm chart to run againts'
-    required: false
-  chart-parameters:
-    description: 'Chart parameters to pass to helm template engine'
-    required: false
   suppressions:
     description: 'List of checks to suppress'
     required: false
-    default: "default"
-  checks:
+    default: "[]"
+  checklists:
     description: 'List of checks to run'
     required: false
-    default: "default"
-  standalone-mode:
-    description: 'Use Chkk Standalone Mode'
+    default: "[]"
+  filters:
+    description: 'List of filters to apply on Kubernetes manifest'
+    required: false
+    default: "[Secret.data,Secret.data.*]"
+  continue-on-failure:
+    description: 'Suppress failures'
     required: false
     default: "false"
-  args:
-    description: 'Additional arguments to pass to Chkk'
+  use-custom-config:
+    description: "Use a custom configuration for chkk post renderer"
     required: false
+    default: "false"
+  chkk-config-path:
+    description: "Path to custom chkk configuration file"
+    required: false
+    default: "${{ github.workspace }}/.chkk"
+  chkk-config-file:
+    description: "Name of custom chkk configuration file"
+    required: false
+    default: "config.yaml"
 
 runs:
   using: "composite"
   steps:
-    - run: VERSION=$(curl -sS https://get.chkk.dev/cli/latest.txt) && curl -Lo chkk https://get.chkk.dev/${VERSION}/chkk-linux-amd64
+    - run: VERSION=$(curl -sS https://get.chkk.dev/helm/latest.txt) && curl -Lo chkk-post-renderer https://get.chkk.dev/${VERSION}/chkk-post-renderer-alpine
       shell: sh
-    - run: chmod +x chkk
-      shell: sh
-    - run: if [ ${{ inputs.standalone-mode }} = true ]; then ./chkk standalone install; fi
-      shell: sh
-    - run: >
-        if [ ${{ inputs.helm-chart }} != "" ]; then
-        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 &&
-        chmod 700 get_helm.sh &&
-        ./get_helm.sh &&
-        helm template ${{ inputs.helm-chart }} ${{ inputs.chart-parameters }} | ./chkk -f - -s ${{ inputs.suppressions }} -c ${{ inputs.checks }} ${{ inputs.args }}; fi
-      shell: sh
-    - run: if [ ${{ inputs.kubernetes-manifest }} != "" ]; then ./chkk -f ${{ inputs.kubernetes-manifest }} -s ${{ inputs.suppressions }} -c ${{ inputs.checks }} ${{ inputs.args }}; fi
-      shell: sh
-    - run: if [ ${{ inputs.kubernetes-directory }} != "" ]; then ./chkk -d ${{ inputs.kubernetes-directory }} -s ${{ inputs.suppressions }} -c ${{ inputs.checks }} ${{ inputs.args }}; fi
-      shell: sh
+    - run: |
+        chmod +x chkk-post-renderer
+        if [ ${{ inputs.use-custom-config }} == false ]; then
+          mkdir -p ${{ inputs.chkk-config-path }};
+          touch ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
+          cat <<EOF > ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }}
+           continue_on_failure: ${{ inputs.continue-on-failure }}
+           checklists: []
+           suppressions: []
+           filters:
+             - Secret.data
+             - Secret.data.*
+        EOF
+        fi
+      shell: bash
+    - run: |
+        if [ ${{ inputs.checklists }} != "[]" ] && [ ${{ inputs.use-custom-config }} == false ]; then
+          IFS=","; read -a checklistsArray <<< ${{ inputs.checklists }};
+          for index in "${!checklistsArray[@]}"; do
+            val=${checklistsArray[index]};
+            yq eval ".checklists += "\"${val}\""" -i ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
+          done;
+        fi
+      shell: bash
+    - run: |
+        if [ ${{ inputs.suppressions }} != "[]" ] && [ ${{ inputs.use-custom-config }} == false ]; then
+        IFS=","; read -a suppressionsArray <<< ${{ inputs.suppressions }};
+        for index in "${!suppressionsArray[@]}"; do
+          val=${suppressionsArray[index]};
+          yq eval ".suppressions += "\"${val}\""" -i ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
+        done;fi
+      shell: bash
+    - run: |
+        if [ ${{ inputs.filters }} != "[]" ] && [ ${{ inputs.use-custom-config }} == false ]; then
+        IFS=","; read -a filtersArray <<< ${{ inputs.filters }};
+        for index in "${!filtersArray[@]}"; do
+          val=${filtersArray[index]};
+          yq eval ".filters += "\"${val}\""" -i ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
+        done;fi
+      shell: bash
+    - name: Export configuration details
+      run: |
+        echo "CHKK_CONFIG_PATH=${{ inputs.chkk-config-path }}" >> $GITHUB_ENV
+        echo "CHKK_CONFIG_FILE=${{ inputs.chkk-config-file }}" >> $GITHUB_ENV
+        echo "CHKK_ACCESS_TOKEN=${{ env.CHKK_ACCESS_TOKEN }}" >> $GITHUB_ENV
+      shell: bash

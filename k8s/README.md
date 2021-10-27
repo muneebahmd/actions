@@ -1,7 +1,5 @@
 # Chkk Kubernetes Action
 
-Chkk is an API first platform to catch reliability risks in your Kubernetes deployments and upgrades. Chkk is built for developers, by developers and integrates across the software deployment workflows enabling continuous application and infrastructure reliability to eliminate your operational pain
-
 Here's an example of using Chkk K8s Action, in this case to run checks on a sample Helm chart `ingress-nginx`:
 
 

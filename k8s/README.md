@@ -1,6 +1,6 @@
 # Chkk Kubernetes Action
 
-Integrating with Github Actions is as simple as downloading Chkk and running a scan on your Kubernetes manifests to catch reliability risks in your deployments and upgrades.
+Chkk is an API first platform to catch reliability risks in your Kubernetes deployments and upgrades. Chkk is built for developers, by developers and integrates across the software deployment workflows enabling continuous application and infrastructure reliability to eliminate your operational pain
 
 Here's an example of using Chkk K8s Action, in this case to run checks on a sample Helm chart `ingress-nginx`:
 
@@ -33,10 +33,6 @@ jobs:
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
 ```
 
@@ -47,7 +43,7 @@ The Chkk GitHub Action has properties which are passed to the underlying chkk AP
 | :------------------ | :------ | ------------------------------------------------------------ |
 | checklists          |  []     | List of checks to run              |
 | suppressions        |  []     | List of checks to suppress |
-| filters        |   [Secret.data,Secret.data.*]      | List of filters to apply on Kubernetes manifest           |
+| filters        |   [Secret.data,Secret.data.*]      | List of filters to apply on Kubernetes resource           |
 | continue-on-failure       |    false     | Do not raise error in case a check fails |
 | chkk-config-path          | ${{ github.workspace }}/.chkk | Path to custom chkk configuration file |
 | chkk-config-file | config.yaml | Name of custom chkk configuration file |
@@ -100,10 +96,6 @@ jobs:
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 ```
 
 ### Run Specific CRRs
@@ -140,10 +132,6 @@ jobs:
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 ```
 
 ### Suppress CRRs
@@ -180,10 +168,6 @@ jobs:
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 ```
 
 
@@ -221,15 +205,11 @@ jobs:
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 ```
 
-### Filter confidential and private data from Kubernetes manifests
+### Filter confidential data from Kubernetes resources
 
-To filter out confidential data like Secrets from your Kubernetes manifests, configure the Action with the following parameter:
+To filter out confidential data like Secrets from your Kubernetes resources, configure the Action with the following parameter:
 
 `filters` : <list of comma separated filters. e.g. ClusterRole.*,ServiceAccount.metadata.*>
 
@@ -248,7 +228,7 @@ jobs:
         env:
           CHKK_ACCESS_TOKEN: ${{ secrets.CHKK_ACCESS_TOKEN }}
         with:
-          filters: "ClusterRole.*,ServiceAccount.metadata.*"
+          filters: "Secret.data.*,ServiceAccount.metadata.*"
 
       - name: Deploy
         uses: WyriHaximus/github-action-helm3@v2.1.3
@@ -261,10 +241,6 @@ jobs:
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 ```
 
 ### Specify custom chkk configuration
@@ -307,10 +283,6 @@ jobs:
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 ```
 
 Made with 🧡 by Chkk

@@ -12,7 +12,7 @@ inputs:
   filters:
     description: 'List of filters to apply on Kubernetes manifest'
     required: false
-    default: "[Secret.data,Secret.data.*]"
+    default: "Secret.data,Secret.data.*"
   continue-on-failure:
     description: 'Suppress failures'
     required: false

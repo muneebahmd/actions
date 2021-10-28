@@ -24,12 +24,12 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v2.1.3
         with:
           exec: |
-            apk --no-cache add curl
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm install demo-nginx ingress-nginx/ingress-nginx \
+                 --atomic \
+                 --version 3.35.0 \
+                 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
 
 ```
@@ -41,10 +41,8 @@ The Chkk GitHub Action has properties which are passed to the underlying chkk AP
 | :------------------ | :------ | ------------------------------------------------------------ |
 | checklists          |  []     | List of checks to run              |
 | suppressions        |  []     | List of checks to suppress |
-| filters        |   [Secret.data,Secret.data.*]      | List of filters to apply on Kubernetes resource           |
+| filters        |   Secret.data,Secret.data.*      | List of filters to apply on Kubernetes resource           |
 | continue-on-failure       |    false     | Do not raise error in case a check fails |
-| chkk-config-path          | ${{ github.workspace }}/.chkk | Path to custom chkk configuration file |
-| chkk-config-file | config.yaml | Name of custom chkk configuration file |
 
 
 
@@ -87,12 +85,12 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v2.1.3
         with:
           exec: |
-            apk --no-cache add curl
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm install demo-nginx ingress-nginx/ingress-nginx \
+                 --atomic \
+                 --version 3.35.0 \
+                 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
 ```
 
@@ -123,12 +121,12 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v2.1.3
         with:
           exec: |
-            apk --no-cache add curl
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm install demo-nginx ingress-nginx/ingress-nginx \
+                 --atomic \
+                 --version 3.35.0 \
+                 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
 ```
 
@@ -159,12 +157,12 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v2.1.3
         with:
           exec: |
-            apk --no-cache add curl
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm install demo-nginx ingress-nginx/ingress-nginx \
+                 --atomic \
+                 --version 3.35.0 \
+                 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
 ```
 
@@ -196,12 +194,12 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v2.1.3
         with:
           exec: |
-            apk --no-cache add curl
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm install demo-nginx ingress-nginx/ingress-nginx \
+                 --atomic
+                 --version 3.35.0
+                 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
 ```
 
@@ -232,55 +230,14 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v2.1.3
         with:
           exec: |
-            apk --no-cache add curl
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            helm install demo-nginx ingress-nginx/ingress-nginx \
+                 --atomic \
+                 --version 3.35.0 \
+                 --post-renderer ./chkk-post-renderer
           kubeconfig: '${{ secrets.KUBECONFIG }}'
 ```
 
-### Specify custom chkk configuration
-
-To specify a custom configuration file for chkk that is located in your source code, configure the Action with the following parameters:
-
-`use-custom-config` : true
-
-`chkk-config-path`: ${{github.workspace}}/k8s/
-
-`chkk-config-file`: config.yaml
-
-```yaml
-name: CI
-on:
-  push:
-jobs:
-  deployment:
-    runs-on: 'ubuntu-latest'
-    steps:
-      - uses: actions/checkout@v1
-
-      - uses: chkk-io/actions/k8s@main
-        id: precheck
-        env:
-          CHKK_ACCESS_TOKEN: ${{ secrets.CHKK_ACCESS_TOKEN }}
-        with:
-          use-custom-config: true
-          chkk-config-path: ${{github.workspace}}/k8s/
-          chkk-config-file: config.yaml
-
-      - name: Deploy
-        uses: WyriHaximus/github-action-helm3@v2.1.3
-        with:
-          exec: |
-            apk --no-cache add curl
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx;helm repo update; helm install demo-nginx ingress-nginx/ingress-nginx --atomic --version 3.35.0 --post-renderer ./chkk-post-renderer
-          kubeconfig: '${{ secrets.KUBECONFIG }}'
-```
 
 Made with 🧡 by Chkk

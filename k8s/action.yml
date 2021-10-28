@@ -17,67 +17,17 @@ inputs:
     description: 'Suppress failures'
     required: false
     default: "false"
-  use-custom-config:
-    description: "Use a custom configuration for chkk post renderer"
-    required: false
-    default: "false"
-  chkk-config-path:
-    description: "Path to custom chkk configuration file"
-    required: false
-    default: "${{ github.workspace }}/.chkk"
-  chkk-config-file:
-    description: "Name of custom chkk configuration file"
-    required: false
-    default: "config.yaml"
 
+outputs:
+  config:
+    description: 'chkk configuration'
+  binary:
+    description: 'post-renderer binary'
 runs:
-  using: "composite"
-  steps:
-    - run: VERSION=$(curl -sS https://get.chkk.dev/helm/latest.txt) && curl -Lo chkk-post-renderer https://get.chkk.dev/${VERSION}/chkk-post-renderer-alpine
-      shell: sh
-    - run: |
-        chmod +x chkk-post-renderer
-        if [ ${{ inputs.use-custom-config }} == false ]; then
-          mkdir -p ${{ inputs.chkk-config-path }};
-          touch ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
-          cat <<EOF > ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }}
-           continue_on_failure: ${{ inputs.continue-on-failure }}
-           checklists: []
-           suppressions: []
-           filters:
-             - Secret.data
-             - Secret.data.*
-        EOF
-        fi
-      shell: bash
-    - run: |
-        if [ ${{ inputs.checklists }} != "[]" ] && [ ${{ inputs.use-custom-config }} == false ]; then
-          IFS=","; read -a checklistsArray <<< ${{ inputs.checklists }};
-          for index in "${!checklistsArray[@]}"; do
-            val=${checklistsArray[index]};
-            yq eval ".checklists += "\"${val}\""" -i ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
-          done;
-        fi
-      shell: bash
-    - run: |
-        if [ ${{ inputs.suppressions }} != "[]" ] && [ ${{ inputs.use-custom-config }} == false ]; then
-        IFS=","; read -a suppressionsArray <<< ${{ inputs.suppressions }};
-        for index in "${!suppressionsArray[@]}"; do
-          val=${suppressionsArray[index]};
-          yq eval ".suppressions += "\"${val}\""" -i ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
-        done;fi
-      shell: bash
-    - run: |
-        if [ ${{ inputs.filters }} != "[]" ] && [ ${{ inputs.use-custom-config }} == false ]; then
-        IFS=","; read -a filtersArray <<< ${{ inputs.filters }};
-        for index in "${!filtersArray[@]}"; do
-          val=${filtersArray[index]};
-          yq eval ".filters += "\"${val}\""" -i ${{ inputs.chkk-config-path }}/${{ inputs.chkk-config-file }};
-        done;fi
-      shell: bash
-    - name: Export configuration details
-      run: |
-        echo "CHKK_CONFIG_PATH=${{ inputs.chkk-config-path }}" >> $GITHUB_ENV
-        echo "CHKK_CONFIG_FILE=${{ inputs.chkk-config-file }}" >> $GITHUB_ENV
-        echo "CHKK_ACCESS_TOKEN=${{ env.CHKK_ACCESS_TOKEN }}" >> $GITHUB_ENV
-      shell: bash
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.suppressions }}
+    - ${{ inputs.checklists }}
+    - ${{ inputs.filters }}
+    - ${{ inputs.continue-on-failure }}
